@@ -5,6 +5,7 @@ idna==2.10
 isort==5.7.0
 lazy-object-proxy==1.4.3
 mccabe==0.6.1
+PyAudio==0.2.11
 pylint==2.6.0
 requests==2.25.1
 six==1.15.0

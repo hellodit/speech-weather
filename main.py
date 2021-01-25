@@ -2,12 +2,11 @@ import requests
 from requests.exceptions import HTTPError
 import speech_recognition
 
-def getWeatherInfo(location):
+def get_weather_info(location):
     try:
-        response = requests.get("http://api.weatherstack.com/current?access_key=access_key&query={location}")
+        response = requests.get("http://api.weatherstack.com/current?access_key=####&query="+location)
         # If the response was successful, no Exception will be raised
-        response = response.json()
-        return response["current"]
+        return response.json()
     except HTTPError as http_err:
         return print(f'HTTP error occurred: {http_err}')  # Python 3.6
     except Exception as err:
@@ -29,12 +28,10 @@ def speech_to_text_microphone(recognizer, microphone):
         "success": True,
         "error": None,
         "transcription": None,
-        "weather": None
     }
 
     try:
         response["transcription"] = recognizer.recognize_google(audio,language="id-ID")
-        response["weather"] = getWeatherInfo(response["transcription"])
         
     except speech_recognition.RequestError:
         # API was unreachable or unresponsive
@@ -55,7 +52,8 @@ if __name__ == "__main__":
     response = speech_to_text_microphone(recognizer, microphone)
 
     if response["success"] == True:
-        print(response)
+        weather = get_weather_info(response["transcription"])
+        print("currently "+format(weather["location"]["name"]+" Region "+weather["location"]["region"]+"\n Weather condition " +weather["current"]["weather_descriptions"][0]))
     elif response["success"] == False:
         print(response["error"])
     else:
