@@ -1,12 +1,17 @@
+from wave import openfp
 import requests
 from requests.exceptions import HTTPError
 import speech_recognition
 
 def get_weather_info(location):
     try:
-        response = requests.get("http://api.weatherstack.com/current?access_key=####&query="+location)
+        response = requests.get("http://api.weatherstack.com/current?access_key=20e25db211b545e23f0419d47236e321&query="+location)
         # If the response was successful, no Exception will be raised
-        return response.json()
+        result =  response.json()
+        if 'success' in result and result['success'] == False:
+            raise TypeError("`Location not valid")
+        return result 
+
     except HTTPError as http_err:
         return print(f'HTTP error occurred: {http_err}')  # Python 3.6
     except Exception as err:
@@ -19,6 +24,8 @@ def speech_to_text_microphone(recognizer, microphone):
 
     if not isinstance(microphone, speech_recognition.Microphone):
         raise TypeError("`microphone` must be `Microphone` instance")
+
+    print("Say something!")
 
     with microphone as source:
         recognizer.adjust_for_ambient_noise(source)
@@ -49,11 +56,26 @@ def speech_to_text_microphone(recognizer, microphone):
 if __name__ == "__main__":
     recognizer = speech_recognition.Recognizer()
     microphone = speech_recognition.Microphone()
+    print("A moment of silence, please... \n")
+
     response = speech_to_text_microphone(recognizer, microphone)
 
     if response["success"] == True:
+        print("You said: {} \n".format(response["transcription"]))
+        
+        print("Getting weather data, please wait... \n")
         weather = get_weather_info(response["transcription"])
-        print("currently "+format(weather["location"]["name"]+" Region "+weather["location"]["region"]+"\n Weather condition " +weather["current"]["weather_descriptions"][0]))
+
+        print(
+            "Currently {}, region {}, country {}, \n"
+            "Temperature {}f, feelslike {}c, Wind speed {} \n"
+            "Weather condition {} \n"
+            .format(
+                weather["location"]["name"],weather["location"]["region"],weather["location"]["country"],
+                weather["current"]["temperature"],weather["current"]["feelslike"],weather["current"]["wind_speed"],
+                weather["current"]["weather_descriptions"][0]
+            )
+        )
     elif response["success"] == False:
         print(response["error"])
     else:
