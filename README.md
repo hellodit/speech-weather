@@ -12,4 +12,5 @@ Get weather info using speech recognition
 * Weather stack API 
 
 ## Study case 
-coming soon 
+[Tlab Circle Medium](https://medium.com/tlabcircle/membuat-aplikasi-cuaca-dengan-speech-recognition-482b42aeb341)
+
